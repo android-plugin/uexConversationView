@@ -1,2 +1,2 @@
-# appcan-plugin-demo-android
-Android插件基础工程
+# uexConversationView
+聊天界面插件
