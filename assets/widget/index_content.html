@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="css/ui-box.css">
+        <link rel="stylesheet" href="css/ui-base.css">
+        <link rel="stylesheet" href="css/ui-color.css">
+        <link rel="stylesheet" href="css/appcan.icon.css">
+        <link rel="stylesheet" href="css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <script src="js/appcan.js"></script>
+        <script src="js/appcan.control.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            var width=screen.availWidth;
+            var height=screen.availHeight;
+            var open={
+                x:'0',
+                y:'0',
+                w:width,
+                h:height,
+                bgImage:'',
+                me:{
+                    photo:'res://mother.png',
+                    nickname:'妈咪',
+                    fontSize:'',
+                    fontColor:'#696969'
+                    },
+                you:{
+                    photo:'res://baby.png',
+                    nickname:'宝贝',
+                    fontsize:'',
+                    fontColor:'#696969'
+                    }
+            }
+            uexConversationView.open(JSON.stringify(open));
+            uexConversationView.cbOpen=function(){
+                  var param={};
+            param.type=2;
+            var data='2015-08-08 08:08:08/lihao/204,2015-08-08 08:08:08/lihao/214,2015-08-08 08:08:08/lihao/224,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/203,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/213,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/223,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/103,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/113,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/123,';
+            param.messages=htmlStr(data);
+            uexConversationView.addMessages(JSON.stringify(param));
+            }
+        })
+        
+        function timech(time){
+              //var s='2012-08-22 12:12:12';
+              var a=time.split(/[^0-9]/);
+              var d=new Date(a[0],a[1]-1,a[2],a[3],a[4],a[5]);
+              return d.getTime();
+          }
+        function htmlStr(data){
+             var messages=[];
+            var datas=data.split(",");
+              for (var i = 0; i < datas.length - 1; i++) {
+                 var msg={};
+                 var diff=datas[i].substring(datas[i].lastIndexOf('/')+1);
+                 var time=datas[i].substring(0,datas[i].indexOf('/'));
+                 msg.timestamp=timech(time);
+                 msg.from=diff.split('')[0];
+                 msg.status=diff.split('')[1];
+                 var kind=diff.split('')[2];
+                 if ( kind == 3 ){ 
+                    msg.type=2;
+                    var str=datas[i].substring(0,datas[i].lastIndexOf('/'));
+                    msg.data=str.substring(str.indexOf('/'),str.lastIndexOf('/'));
+                    msg.size=str.substring(str.lastIndexOf('/')+1);
+                }else{
+                    msg.type=1;
+                    msg.data=datas[i].substring(datas[i].indexOf('/')+1,datas[i].lastIndexOf('/'));
+                }
+                messages.push(msg);
+            }
+            return messages; 
+         }
+        
+    </script>
+</html>
