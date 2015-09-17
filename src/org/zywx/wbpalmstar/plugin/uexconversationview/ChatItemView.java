@@ -103,7 +103,7 @@ public class ChatItemView extends LinearLayout {
             if (messageVO.getFrom()==1){
                 //自己
                 mMsgVoiceTimeLeftTV.setVisibility(View.VISIBLE);
-                setVoiceTime(mMsgVoiceTimeLeftTV,messageVO.getData());
+                setVoiceTime(mMsgVoiceTimeLeftTV,messageVO);
                 Drawable drawable=getResources().getDrawable(EUExUtil.getResDrawableID
                         ("plugin_uexconversation_voice_icon_right"));
                 drawable.setBounds(0, 0, drawable.getMinimumWidth(),
@@ -112,7 +112,7 @@ public class ChatItemView extends LinearLayout {
             }else{
                 //对方
                 mMsgVoiceTimeRightTV.setVisibility(View.VISIBLE);
-                setVoiceTime(mMsgVoiceTimeRightTV,messageVO.getData());
+                setVoiceTime(mMsgVoiceTimeRightTV,messageVO);
                 Drawable drawable=getResources().getDrawable(EUExUtil.getResDrawableID
                         ("plugin_uexconversation_voice_icon_left"));
                 drawable.setBounds(0, 0, drawable.getMinimumWidth(),
@@ -149,26 +149,31 @@ public class ChatItemView extends LinearLayout {
     /**
      * 设置语音时长信息
      * @param timeView
-     * @param filePath
+     * @param messageVO
      */
-    private void setVoiceTime(TextView timeView,String filePath){
-        try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-                MediaMetadataRetriever retriever = null;
-                retriever = new MediaMetadataRetriever();
-                retriever.setDataSource(filePath); //在获取前，设置文件路径（应该只能是本地路径）
-                String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                retriever.release(); //释放
-                long dur = 0l;
-                if (!TextUtils.isEmpty(duration)) {
-                    dur = Long.parseLong(duration);
+    private void setVoiceTime(TextView timeView,MessageVO messageVO){
+        if (messageVO.getDuration()==-1l) {
+            try {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+                    MediaMetadataRetriever retriever = null;
+                    retriever = new MediaMetadataRetriever();
+                    retriever.setDataSource(messageVO.getData()); //在获取前，设置文件路径（应该只能是本地路径）
+                    String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                    retriever.release(); //释放
+                    long dur = 0l;
+                    if (!TextUtils.isEmpty(duration)) {
+                        dur = Long.parseLong(duration);
+                    }
+                    messageVO.setDuration(dur / 1000);
+                  } else {
+                    messageVO.setDuration(1);
                 }
-                timeView.setText(String.valueOf(dur / 1000) + "''");
-            } else {
-                timeView.setText("n''");
+            } catch (Exception e) {
+                messageVO.setDuration(1);
             }
-        }catch (Exception e){
         }
+        timeView.setText(messageVO.getDuration() + "''");
+
     }
 
     /**

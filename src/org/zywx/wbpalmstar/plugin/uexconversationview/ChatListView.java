@@ -22,6 +22,7 @@ package org.zywx.wbpalmstar.plugin.uexconversationview;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.widget.ListView;
 
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.AddMessagesInputVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.MessageVO;
@@ -30,13 +31,10 @@ import org.zywx.wbpalmstar.plugin.uexconversationview.vo.UserVO;
 import java.util.ArrayList;
 import java.util.List;
 
-import zrc.widget.SimpleHeader;
-import zrc.widget.ZrcListView;
-
 /**
  * Created by ylt on 15/9/14.
  */
-public class ChatListView extends ZrcListView {
+public class ChatListView extends ListView {
 
     private List<MessageVO> mMessageVOs;
 
@@ -58,23 +56,29 @@ public class ChatListView extends ZrcListView {
 //        header.setCircleColor(0xff33bbee);
 //        setHeadable(header);
         setAdapter(mChatAdapter);
-        setOnRefreshStartListener(new OnStartListener() {
-            @Override
-            public void onStart() {
-                if (mLoadingListener != null) {
-                    mLoadingListener.onLoading();
-                }
-            }
-        });
+//        setOnRefreshStartListener(new OnStartListener() {
+//            @Override
+//            public void onStart() {
+//                if (mLoadingListener != null) {
+//                    mLoadingListener.onLoading();
+//                }
+//            }
+//        });
         setBackgroundColor(Color.parseColor("#e7eff0"));
         setFadingEdgeLength(0);
         setSelector(new ColorDrawable(Color.TRANSPARENT));
         setDivider(new ColorDrawable(Color.TRANSPARENT));
         setCacheColorHint(Color.TRANSPARENT);
+        setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL);
     }
 
     public void addMessages(AddMessagesInputVO inputVO){
-        setRefreshSuccess("");
+        int lastVisiblePosition=getLastVisiblePosition();
+        boolean needScrollToEnd=false;
+        if (lastVisiblePosition!=-1&&getAdapter().getCount()-lastVisiblePosition<5){
+            needScrollToEnd=true;
+        }
+//        setRefreshSuccess("");
         if (inputVO.getType()==1){
             //新消息
             mMessageVOs.addAll(inputVO.getMessages());
@@ -88,6 +92,9 @@ public class ChatListView extends ZrcListView {
             }
         }
         mChatAdapter.notifyDataSetChanged();
+        if (needScrollToEnd){
+            setSelection(getAdapter().getCount()-1);
+        }
     }
 
     public void setLoadingListener(OnLoadingListener mLoadingListener) {
