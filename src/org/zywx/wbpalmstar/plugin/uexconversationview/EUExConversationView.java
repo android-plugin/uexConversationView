@@ -64,7 +64,7 @@ public class EUExConversationView extends EUExBase {
         mChatListView=new ChatListView(mContext);
         mChatListView.init(inputVO.getYou(), inputVO.getMe());
         AbsoluteLayout.LayoutParams layoutParams=new AbsoluteLayout.LayoutParams
-                (inputVO.getX(),inputVO.getY(),inputVO.getW(),inputVO.getH());
+                (inputVO.getW(),inputVO.getH(),inputVO.getX(),inputVO.getY());
 //        layoutParams.setMargins(inputVO.getX(),inputVO.getY(),0,0);
         mChatListView.setLoadingListener(new ChatListView.OnLoadingListener() {
             @Override

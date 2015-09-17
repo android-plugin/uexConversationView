@@ -66,6 +66,8 @@ public class ChatListView extends ListView {
 //        });
         setBackgroundColor(Color.parseColor("#e7eff0"));
         setFadingEdgeLength(0);
+        setOverScrollMode(OVER_SCROLL_NEVER);
+        setVerticalFadingEdgeEnabled(false);
         setSelector(new ColorDrawable(Color.TRANSPARENT));
         setDivider(new ColorDrawable(Color.TRANSPARENT));
         setCacheColorHint(Color.TRANSPARENT);
