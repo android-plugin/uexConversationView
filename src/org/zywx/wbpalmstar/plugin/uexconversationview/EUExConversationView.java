@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
+import android.widget.AbsoluteLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -19,6 +20,8 @@ import org.zywx.wbpalmstar.plugin.uexconversationview.vo.AddMessagesInputVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.OpenInputVO;
 
 public class EUExConversationView extends EUExBase {
+
+    private String TAG="uexConversationView";
 
     private static final String BUNDLE_DATA = "data";
     private static final int MSG_OPEN = 1;
@@ -60,15 +63,16 @@ public class EUExConversationView extends EUExBase {
         }
         mChatListView=new ChatListView(mContext);
         mChatListView.init(inputVO.getYou(), inputVO.getMe());
-        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams(inputVO.getW(),inputVO.getH());
-        layoutParams.setMargins(inputVO.getX(),inputVO.getY(),0,0);
+        AbsoluteLayout.LayoutParams layoutParams=new AbsoluteLayout.LayoutParams
+                (inputVO.getX(),inputVO.getY(),inputVO.getW(),inputVO.getH());
+//        layoutParams.setMargins(inputVO.getX(),inputVO.getY(),0,0);
         mChatListView.setLoadingListener(new ChatListView.OnLoadingListener() {
             @Override
             public void onLoading() {
                 callBackPluginJs(JsConst.ON_PULL_LOADING,"");
             }
         });
-        addViewToCurrentWindow(mChatListView, layoutParams);
+        addViewToWebView(mChatListView, layoutParams, TAG);
         JSONObject jsonResult = new JSONObject();
         try {
             jsonResult.put("", "");
