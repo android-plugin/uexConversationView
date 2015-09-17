@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.zywx.wbpalmstar.base.BDebug;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.AddMessagesInputVO;
@@ -93,6 +94,10 @@ public class EUExConversationView extends EUExBase {
     private void addMessagesMsg(String[] params) {
         String json = params[0];
         AddMessagesInputVO inputVO=mGson.fromJson(json,AddMessagesInputVO.class);
+        if (inputVO==null){
+            BDebug.e("appcan","input param is null...");
+            return;
+        }
         mChatListView.addMessages(inputVO);
     }
 
