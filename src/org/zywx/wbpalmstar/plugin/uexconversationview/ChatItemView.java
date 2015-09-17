@@ -95,6 +95,7 @@ public class ChatItemView extends LinearLayout {
         if (messageVO.getType()==1){
             //文本
             mMsgContentTV.setText(messageVO.getData());
+            mMsgContentTV.setGravity(Gravity.LEFT);
             mMsgContentTV.setOnClickListener(null);
             mMsgContentTV.setCompoundDrawables(null, null, null, null);
         }else{
@@ -163,6 +164,9 @@ public class ChatItemView extends LinearLayout {
                     long dur = 0l;
                     if (!TextUtils.isEmpty(duration)) {
                         dur = Long.parseLong(duration);
+                    }
+                    if (dur%1000>=500){
+                        dur+=1000;
                     }
                     messageVO.setDuration(dur / 1000);
                   } else {
