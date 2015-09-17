@@ -53,10 +53,10 @@ public class ChatListView extends ZrcListView {
         if (mChatAdapter==null) {
             mChatAdapter = new ChatAdapter(this.getContext(), mMessageVOs, otherUserVO, myUserVO);
         }
-        SimpleHeader header=new SimpleHeader(getContext());
-        header.setTextColor(0xff0066aa);
-        header.setCircleColor(0xff33bbee);
-        setHeadable(header);
+//        SimpleHeader header=new SimpleHeader(getContext());
+//        header.setTextColor(0xff0066aa);
+//        header.setCircleColor(0xff33bbee);
+//        setHeadable(header);
         setAdapter(mChatAdapter);
         setOnRefreshStartListener(new OnStartListener() {
             @Override
