@@ -42,6 +42,8 @@ public class ChatListView extends ListView {
 
     private OnLoadingListener mLoadingListener;
 
+    private boolean isFirst=true;//是否第一次添加消息
+
     public ChatListView(Context context) {
         super(context);
     }
@@ -80,6 +82,10 @@ public class ChatListView extends ListView {
         if (lastVisiblePosition!=-1&&getAdapter().getCount()-lastVisiblePosition<5){
             needScrollToEnd=true;
         }
+        if (isFirst){
+            needScrollToEnd=true;
+            isFirst=false;
+        }
 //        setRefreshSuccess("");
         if (inputVO.getType()==1){
             //新消息
@@ -94,7 +100,7 @@ public class ChatListView extends ListView {
             }
         }
         mChatAdapter.notifyDataSetChanged();
-        if (needScrollToEnd){
+        if (needScrollToEnd&&getAdapter().getCount()>0){
             setSelection(getAdapter().getCount()-1);
         }
     }
