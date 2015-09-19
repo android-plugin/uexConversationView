@@ -20,6 +20,7 @@
 package org.zywx.wbpalmstar.plugin.uexconversationview;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -102,31 +103,41 @@ public class ChatItemView extends LinearLayout {
         }else{
             //语音
             mMsgContentTV.setText("");
+            final AnimationDrawable anim=new AnimationDrawable();
             if (messageVO.getFrom()==1){
                 //自己
                 mMsgVoiceTimeLeftTV.setVisibility(View.VISIBLE);
                 setVoiceTime(mMsgVoiceTimeLeftTV,messageVO);
-                Drawable drawable=getResources().getDrawable(EUExUtil.getResDrawableID
-                        ("plugin_uexconversation_voice_icon_right"));
-                drawable.setBounds(0, 0, drawable.getMinimumWidth(),
-                        drawable.getMinimumHeight());
-                mMsgContentTV.setCompoundDrawables(null, null, drawable, null);
+                for (int i = 1; i <=4; i++) {
+                    int id=EUExUtil.getResDrawableID("plugin_uex_conversation_right_voice"+i);
+                    Drawable frameDrawable=getResources().getDrawable(id);
+                    anim.addFrame(frameDrawable,300);
+                }
+                anim.setOneShot(false);
+                anim.setBounds(0, 0, anim.getMinimumWidth(),
+                        anim.getMinimumHeight());
+                mMsgContentTV.setCompoundDrawables(null, null, anim, null);
             }else{
                 //对方
                 mMsgVoiceTimeRightTV.setVisibility(View.VISIBLE);
-                setVoiceTime(mMsgVoiceTimeRightTV,messageVO);
-                Drawable drawable=getResources().getDrawable(EUExUtil.getResDrawableID
-                        ("plugin_uexconversation_voice_icon_left"));
-                drawable.setBounds(0, 0, drawable.getMinimumWidth(),
-                        drawable.getMinimumHeight());
-                mMsgContentTV.setCompoundDrawables(drawable, null, null, null);
+                setVoiceTime(mMsgVoiceTimeRightTV, messageVO);
+                for (int i = 1; i <=4; i++) {
+                    int id=EUExUtil.getResDrawableID("plugin_uex_conversation_left_voice"+i);
+                    Drawable frameDrawable=getResources().getDrawable(id);
+                    anim.addFrame(frameDrawable,300);
+                }
+                anim.setOneShot(false);
+                anim.setBounds(0, 0, anim.getMinimumWidth(),
+                        anim.getMinimumHeight());
+                mMsgContentTV.setCompoundDrawables(anim, null, null, null);
             }
 
             mMsgContentTV.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //播放语音
-                    playVoice(messageVO.getData());
+                    anim.start();
+                    playVoice(messageVO.getData(),anim);
                 }
             });
         }
@@ -138,15 +149,29 @@ public class ChatItemView extends LinearLayout {
         return format.format(date);
     }
 
-    private void playVoice(String filePath){
+    private void playVoice(String filePath, final AnimationDrawable anim){
         MediaPlayer player=new MediaPlayer();
         try {
             player.setDataSource(filePath);
             player.prepare();
             player.start();
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    stopAnim(anim);
+                }
+            });
         } catch (IOException e) {
+            stopAnim(anim);
         }
      }
+
+    private void stopAnim(AnimationDrawable anim){
+        if (anim!=null&&anim.isRunning()) {
+            anim.stop();
+            anim.selectDrawable(0);
+        }
+    }
 
     /**
      * 设置语音时长信息
