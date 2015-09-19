@@ -14,9 +14,11 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.zywx.wbpalmstar.base.BDebug;
+import org.zywx.wbpalmstar.base.BUtility;
 import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.AddMessagesInputVO;
+import org.zywx.wbpalmstar.plugin.uexconversationview.vo.MessageVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.OpenInputVO;
 
 public class EUExConversationView extends EUExBase {
@@ -102,7 +104,25 @@ public class EUExConversationView extends EUExBase {
             BDebug.e("appcan","input param is null...");
             return;
         }
+        parseData(inputVO);
         mChatListView.addMessages(inputVO);
+    }
+
+    private void parseData(AddMessagesInputVO inputVO){
+        if (inputVO.getMessages()==null){
+            return;
+        }
+        for (MessageVO messageVO:inputVO.getMessages()){
+            if (messageVO.getType()==2){
+                //录音
+                String path=messageVO.getData();
+                String realPath= BUtility.makeRealPath(
+                        BUtility.makeUrl(mBrwView.getCurrentUrl(), path),
+                        mBrwView.getCurrentWidget().m_widgetPath,
+                        mBrwView.getCurrentWidget().m_wgtType);
+                messageVO.setData(realPath);
+            }
+        }
     }
 
     @Override

@@ -101,7 +101,7 @@ public class ChatListView extends ListView {
         }
         mChatAdapter.notifyDataSetChanged();
         if (needScrollToEnd&&getAdapter().getCount()>0){
-            setSelection(getAdapter().getCount()-1);
+            setSelection(getAdapter().getCount() - 1);
         }
     }
 

@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.zywx.wbpalmstar.base.ACEImageLoader;
+import org.zywx.wbpalmstar.base.BDebug;
 import org.zywx.wbpalmstar.engine.universalex.EUExUtil;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.MessageVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.UserVO;
@@ -174,6 +175,9 @@ public class ChatItemView extends LinearLayout {
                 }
             } catch (Exception e) {
                 messageVO.setDuration(1);
+                if (BDebug.DEBUG){
+                    e.printStackTrace();
+                }
             }
         }
         timeView.setText(messageVO.getDuration() + "''");
