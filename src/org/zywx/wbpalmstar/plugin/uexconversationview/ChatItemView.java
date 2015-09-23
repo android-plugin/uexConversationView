@@ -80,7 +80,6 @@ public class ChatItemView extends LinearLayout {
             mLeftInfoLayout.setVisibility(View.INVISIBLE);
             mRightInfoLayout.setVisibility(View.VISIBLE);
             setInfoLayout(mRightInfoLayout, userVO);
-            mMsgContentTV.setGravity(Gravity.RIGHT);
             mMsgContentLayout.setGravity(Gravity.RIGHT);
             mMsgContentTV.setBackgroundResource(EUExUtil.getResDrawableID("plugin_uexconversation_text_right_bg"));
         }else{
@@ -88,7 +87,6 @@ public class ChatItemView extends LinearLayout {
             mLeftInfoLayout.setVisibility(View.VISIBLE);
             mRightInfoLayout.setVisibility(View.INVISIBLE);
             setInfoLayout(mLeftInfoLayout, userVO);
-            mMsgContentTV.setGravity(Gravity.LEFT);
             mMsgContentLayout.setGravity(Gravity.LEFT);
             mMsgContentTV.setBackgroundResource(EUExUtil.getResDrawableID("plugin_uexconversation_text_left_bg"));
         }
@@ -97,7 +95,7 @@ public class ChatItemView extends LinearLayout {
         if (messageVO.getType()==1){
             //文本
             mMsgContentTV.setText(messageVO.getData());
-            mMsgContentTV.setGravity(Gravity.LEFT);
+            mMsgContentTV.setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
             mMsgContentTV.setOnClickListener(null);
             mMsgContentTV.setCompoundDrawables(null, null, null, null);
         }else{
