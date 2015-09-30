@@ -135,6 +135,7 @@ public class EUExConversationView extends EUExBase {
 
     private void closeMsg(String[] params) {
         removeViewFromWebView(TAG);
+        mChatListView=null;
     }
 
     @Override
