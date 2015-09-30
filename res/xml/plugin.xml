@@ -22,5 +22,6 @@
             className="org.zywx.wbpalmstar.plugin.uexconversationview.EUExConversationView" uexName="uexConversationView" >
                 <method name="open" />
                 <method name="addMessages"/>
+                <method name="close" />
         </plugin>
 </uexplugins>

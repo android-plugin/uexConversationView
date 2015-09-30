@@ -23,6 +23,7 @@ import org.zywx.wbpalmstar.plugin.uexconversationview.vo.OpenInputVO;
 
 public class EUExConversationView extends EUExBase {
 
+    private static final int MSG_CLOSE = 3;
     private String TAG="uexConversationView";
 
     private static final String BUNDLE_DATA = "data";
@@ -125,6 +126,17 @@ public class EUExConversationView extends EUExBase {
         }
     }
 
+    public void close(String[] params) {
+        Message msg = new Message();
+        msg.obj = this;
+        msg.what = MSG_CLOSE;
+        mHandler.sendMessage(msg);
+    }
+
+    private void closeMsg(String[] params) {
+        removeViewFromWebView(TAG);
+    }
+
     @Override
     public void onHandleMessage(Message message) {
         if(message == null){
@@ -138,6 +150,9 @@ public class EUExConversationView extends EUExBase {
                 break;
             case MSG_ADD_MESSAGES:
                 addMessagesMsg(bundle.getStringArray(BUNDLE_DATA));
+                break;
+            case MSG_CLOSE:
+                closeMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             default:
                 super.onHandleMessage(message);

@@ -24,5 +24,6 @@
         <method name="open" type="1" params="x|y|w|h|bgImage|me|you"/>
         <method name="addMessages" type="0" params="type|messages"/>
         <method name="onPullLoading" type="2" />
+        <method name="close" />
     </plugin>
 </uexplugins>
