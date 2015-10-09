@@ -43,7 +43,6 @@ public class ChatListView extends ListView {
     private OnLoadingListener mLoadingListener;
 
     private boolean isFirst=true;//是否第一次添加消息
-
     public ChatListView(Context context) {
         super(context);
     }
@@ -105,8 +104,37 @@ public class ChatListView extends ListView {
         }
     }
 
+    public void changeStatusByTimestamp(long time,int status){
+        for (MessageVO messageVO:mMessageVOs){
+            if (messageVO.getTimestamp()==time){
+                messageVO.setStatus(status);
+                break;
+            }
+        }
+        mChatAdapter.notifyDataSetChanged();
+    }
+
+    public void deleteMessageByTimestamp(long time){
+        MessageVO deleteMsg=null;
+        for (MessageVO messageVO:mMessageVOs){
+            if (messageVO.getTimestamp()==time){
+                deleteMsg=messageVO;
+                break;
+            }
+        }
+        if (deleteMsg!=null){
+            mMessageVOs.remove(deleteMsg);
+        }
+        mChatAdapter.notifyDataSetChanged();
+    }
+
+
     public void setLoadingListener(OnLoadingListener mLoadingListener) {
         this.mLoadingListener = mLoadingListener;
+    }
+
+    public void setCallBack(ChatItemView.CallBack callBack) {
+        mChatAdapter.setCallBack(callBack);
     }
 
 

@@ -55,6 +55,10 @@ public class ChatItemView extends LinearLayout {
     private LinearLayout mRightInfoLayout;
     private LinearLayout mMsgContentLayout;//消息内容外面一层layout
 
+    private TextView mSendFailedLeftTv;
+    private TextView mSendFailedRightTv;
+
+    private CallBack mCallBack;
 
     public ChatItemView(Context context) {
         super(context);
@@ -71,6 +75,9 @@ public class ChatItemView extends LinearLayout {
         mLeftInfoLayout= (LinearLayout) findViewById(EUExUtil.getResIdID("chat_info_left_layout"));
         mRightInfoLayout= (LinearLayout) findViewById(EUExUtil.getResIdID("chat_info_right_layout"));
         mMsgContentLayout= (LinearLayout) findViewById(EUExUtil.getResIdID("msg_content_layout"));
+
+        mSendFailedLeftTv= (TextView) findViewById(EUExUtil.getResIdID("send_failed_left_tv"));
+        mSendFailedRightTv= (TextView) findViewById(EUExUtil.getResIdID("send_failed_right_tv"));
     }
 
     public void setData(UserVO userVO, final MessageVO messageVO){
@@ -138,6 +145,40 @@ public class ChatItemView extends LinearLayout {
                     playVoice(messageVO.getData(),anim);
                 }
             });
+        }
+        setSendFailTv(userVO,messageVO);
+    }
+
+    private void setSendFailTv(UserVO userVO, final MessageVO messageVO){
+        mSendFailedRightTv.setVisibility(View.GONE);
+        mSendFailedLeftTv.setVisibility(View.GONE);
+        mSendFailedLeftTv.setOnClickListener(null);
+        mSendFailedRightTv.setOnClickListener(null);
+        if (messageVO.getStatus()!=2){
+            //成功
+        }else{
+            if (messageVO.getFrom()==1){
+                //自己
+                mSendFailedLeftTv.setVisibility(View.VISIBLE);
+                mSendFailedLeftTv.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mCallBack!=null){
+                            mCallBack.onFailedMsgClick(messageVO);
+                        }
+                    }
+                });
+            }else{
+                mSendFailedRightTv.setVisibility(View.VISIBLE);
+                mSendFailedRightTv.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mCallBack!=null){
+                            mCallBack.onFailedMsgClick(messageVO);
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -217,6 +258,16 @@ public class ChatItemView extends LinearLayout {
         TextView nickTV= (TextView) layout.findViewById(EUExUtil.getResIdID("nick_tv"));
         ACEImageLoader.getInstance().displayImage(photoView,userVO.getPhoto());
         nickTV.setText(userVO.getNickname());
+    }
+
+    public void setCallBack(CallBack mCallBack) {
+        this.mCallBack = mCallBack;
+    }
+
+    public interface CallBack{
+
+        void onFailedMsgClick(MessageVO messageVO);
+
     }
 
 }

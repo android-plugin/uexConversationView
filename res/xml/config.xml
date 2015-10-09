@@ -25,5 +25,7 @@
         <method name="addMessages" type="0" params="type|messages"/>
         <method name="onPullLoading" type="2" />
         <method name="close" />
+        <method name="changeStatusByTimestamp" />
+        <method name="deleteMessageByTimestamp" />
     </plugin>
 </uexplugins>

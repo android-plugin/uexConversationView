@@ -38,7 +38,7 @@ public class ChatAdapter extends BaseAdapter {
     private Context mContext;
     private UserVO mOtherUserVO;
     private UserVO mMyUserVO;
-
+    private ChatItemView.CallBack mCallBack;
 
     public ChatAdapter(Context context,List<MessageVO> messageVOs,UserVO otherUserVO,UserVO myUserVO){
         mMessageVOs=messageVOs;
@@ -77,9 +77,13 @@ public class ChatAdapter extends BaseAdapter {
         }else{
             userVO=mOtherUserVO;
         }
+        chatItemView.setCallBack(mCallBack);
         chatItemView.setData(userVO,messageVO);
         return chatItemView;
     }
 
 
+    public void setCallBack(ChatItemView.CallBack callBack) {
+        this.mCallBack=callBack;
+    }
 }

@@ -34,6 +34,8 @@ public class MessageVO implements Serializable {
     private String data;// type == 1时  文本内容  type == 2 时 录音文件路径
     private long duration=-1l;//语音长度
 
+    private int status=0;
+
     public int getType() {
         return type;
     }
@@ -72,5 +74,13 @@ public class MessageVO implements Serializable {
 
     public void setDuration(long duration) {
         this.duration = duration;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

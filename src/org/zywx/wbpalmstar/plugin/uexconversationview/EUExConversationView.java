@@ -24,6 +24,8 @@ import org.zywx.wbpalmstar.plugin.uexconversationview.vo.OpenInputVO;
 public class EUExConversationView extends EUExBase {
 
     private static final int MSG_CLOSE = 3;
+    private static final int MSG_CHANGE_STATUS_BY_TIMESTAMP = 4;
+    private static final int MSG_DELETE_MESSAGE_BY_TIMESTAMP = 5;
     private String TAG="uexConversationView";
 
     private static final String BUNDLE_DATA = "data";
@@ -82,6 +84,17 @@ public class EUExConversationView extends EUExBase {
         } catch (JSONException e) {
         }
         callBackPluginJs(JsConst.CALLBACK_OPEN, jsonResult.toString());
+        mChatListView.setCallBack(new ChatItemView.CallBack() {
+            @Override
+            public void onFailedMsgClick(MessageVO messageVO) {
+                JSONObject jsonResult = new JSONObject();
+                try {
+                    jsonResult.put("timestamp", messageVO.getTimestamp());
+                } catch (JSONException e) {
+                }
+                callBackPluginJs(JsConst.ON_ERROR_LABEL_CLICKED, jsonResult.toString());
+            }
+        });
     }
 
     public void addMessages(String[] params) {
@@ -138,6 +151,58 @@ public class EUExConversationView extends EUExBase {
         mChatListView=null;
     }
 
+    public void changeStatusByTimestamp(String[] params) {
+        if (params == null || params.length < 1) {
+            errorCallback(0, 0, "error params!");
+            return;
+        }
+        Message msg = new Message();
+        msg.obj = this;
+        msg.what = MSG_CHANGE_STATUS_BY_TIMESTAMP;
+        Bundle bd = new Bundle();
+        bd.putStringArray(BUNDLE_DATA, params);
+        msg.setData(bd);
+        mHandler.sendMessage(msg);
+    }
+
+    private void changeStatusByTimestampMsg(String[] params) {
+        String json = params[0];
+        try {
+            JSONObject jsonObject=new JSONObject(json);
+            int status=jsonObject.getInt("status");
+            long time=jsonObject.getLong("timestamp");
+            mChatListView.changeStatusByTimestamp(time,status);
+        } catch (JSONException e) {
+
+        }
+
+    }
+
+    public void deleteMessageByTimestamp(String[] params) {
+        if (params == null || params.length < 1) {
+            errorCallback(0, 0, "error params!");
+            return;
+        }
+        Message msg = new Message();
+        msg.obj = this;
+        msg.what = MSG_DELETE_MESSAGE_BY_TIMESTAMP;
+        Bundle bd = new Bundle();
+        bd.putStringArray(BUNDLE_DATA, params);
+        msg.setData(bd);
+        mHandler.sendMessage(msg);
+    }
+
+    private void deleteMessageByTimestampMsg(String[] params) {
+        String json = params[0];
+        try {
+            JSONObject jsonObject=new JSONObject(json);
+            long time=jsonObject.getLong("timestamp");
+            mChatListView.deleteMessageByTimestamp(time);
+        } catch (JSONException e) {
+
+        }
+    }
+
     @Override
     public void onHandleMessage(Message message) {
         if(message == null){
@@ -154,6 +219,12 @@ public class EUExConversationView extends EUExBase {
                 break;
             case MSG_CLOSE:
                 closeMsg(bundle.getStringArray(BUNDLE_DATA));
+                break;
+            case MSG_CHANGE_STATUS_BY_TIMESTAMP:
+                changeStatusByTimestampMsg(bundle.getStringArray(BUNDLE_DATA));
+                break;
+            case MSG_DELETE_MESSAGE_BY_TIMESTAMP:
+                deleteMessageByTimestampMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             default:
                 super.onHandleMessage(message);
