@@ -12,8 +12,10 @@
         <link rel="stylesheet" href="css/appcan.control.css">
     </head>
     <body class="um-vp bc-bg" ontouchstart>
+    <div class="" id="aaa">111111</div>
         <script src="js/appcan.js"></script>
         <script src="js/appcan.control.js"></script>
+
     </body>
     <script>
         appcan.ready(function() {
@@ -21,9 +23,9 @@
             var height=screen.availHeight;
             var open={
                 x:'0',
-                y:'0',
+                y:'500',
                 w:width,
-                h:height,
+                h:height-800,
                 bgImage:'',
                 me:{
                     photo:'res://mother.png',
@@ -42,12 +44,22 @@
             uexConversationView.cbOpen=function(){
                   var param={};
             param.type=2;
-            var data='2015-08-08 08:08:08/lihao/204,2015-08-08 08:08:08/lihao/214,2015-08-08 08:08:08/lihao/224,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/203,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/213,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/223,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/103,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/113,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/123,';
+            var data='2015-08-08 08:08:08/lihao/204,2015-08-08 08:08:08/lihao/214,2015-08-08 08:08:08/lihao/224,2015-9-15 14:50:55/storage/sdcard0/widgetone/apps/11456717/audio/2015-09-15-14-50-51.amr/4678/203';
             param.messages=htmlStr(data);
             uexConversationView.addMessages(JSON.stringify(param));
             }
+
+            uexConversationView.onErrorLabelClicked=function(time){
+            alert(time);
+            }
         })
-        
+        $("#aaa").click(function(){
+            var param={
+                timestamp:timech("2015-9-15 14:50:55"),
+                       status:1,
+                }
+                uexConversationView.changeStatusByTimestamp(JSON.stringify(param));
+        })
         function timech(time){
               //var s='2012-08-22 12:12:12';
               var a=time.split(/[^0-9]/);
