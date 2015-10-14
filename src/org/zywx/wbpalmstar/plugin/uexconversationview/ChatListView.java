@@ -72,7 +72,7 @@ public class ChatListView extends ListView {
         setSelector(new ColorDrawable(Color.TRANSPARENT));
         setDivider(new ColorDrawable(Color.TRANSPARENT));
         setCacheColorHint(Color.TRANSPARENT);
-        setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL);
+//        setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL);
     }
 
     public void addMessages(AddMessagesInputVO inputVO){
