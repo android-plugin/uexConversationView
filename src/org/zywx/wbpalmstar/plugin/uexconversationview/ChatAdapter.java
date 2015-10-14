@@ -134,10 +134,12 @@ public class ChatAdapter extends BaseAdapter {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     mPlayingPosition=-1;
+                    notifyDataSetChanged();
                 }
             });
         } catch (IOException e) {
             mPlayingPosition=-1;
+            notifyDataSetChanged();
         }
     }
 
