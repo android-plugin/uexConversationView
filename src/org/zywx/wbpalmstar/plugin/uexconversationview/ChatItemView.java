@@ -59,10 +59,8 @@ public class ChatItemView extends LinearLayout {
     private TextView mSendFailedRightTv;
 
     private CallBack mCallBack;
-    MediaPlayer mPlayer;
     AnimationDrawable mAnim;
 
-    private ChatAdapter mAdapter;
 
     public ChatItemView(Context context) {
         super(context);
@@ -84,7 +82,8 @@ public class ChatItemView extends LinearLayout {
         mSendFailedRightTv= (TextView) findViewById(EUExUtil.getResIdID("send_failed_right_tv"));
     }
 
-    public void setData(UserVO userVO, final MessageVO messageVO, final int position, int playingPosition){
+    public void setData(UserVO userVO, final MessageVO messageVO, final int position, int playingPosition,
+        OnClickListener onClickListener){
         mTimeTV.setText(getTimeString(messageVO.getTimestamp()));
         if (messageVO.getFrom()==1){
             //自己
@@ -141,31 +140,17 @@ public class ChatItemView extends LinearLayout {
                 mMsgContentTV.setCompoundDrawables(mAnim, null, null, null);
             }
 
-            mMsgContentTV.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mAdapter.setPlayingPosition(position);
-                    mAdapter.notifyDataSetChanged();
-                    //播放语音
-                }
-            });
+            mMsgContentTV.setOnClickListener(onClickListener);
         }
         if (position!=playingPosition){
             resetPlayer();
         }else{
             mAnim.start();
-            playVoice(messageVO.getData(), mAnim);
-
         }
         setSendFailTv(userVO,messageVO);
      }
 
     private void resetPlayer(){
-        if (mPlayer!=null){
-            mPlayer.stop();
-            mPlayer.reset();
-            mPlayer=null;
-        }
         if (mAnim!=null&&mAnim.isRunning()) {
             stopAnim(mAnim);
         }
@@ -209,33 +194,6 @@ public class ChatItemView extends LinearLayout {
         Date date=new Date(time);
         return format.format(date);
     }
-
-    private void playVoice(String filePath, final AnimationDrawable anim){
-        if (filePath==null){
-            BDebug.e("appcan","file path is null");
-            return;
-        }
-        if (mPlayer!=null){
-            mPlayer.stop();
-            mPlayer.release();
-            mPlayer=null;
-        }
-        mPlayer = new MediaPlayer();
-
-        try {
-            mPlayer.setDataSource(filePath);
-            mPlayer.prepare();
-            mPlayer.start();
-            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    stopAnim(anim);
-                }
-            });
-        } catch (IOException e) {
-            stopAnim(anim);
-        }
-     }
 
     private void stopAnim(AnimationDrawable anim){
         if (anim!=null&&anim.isRunning()) {
@@ -294,10 +252,6 @@ public class ChatItemView extends LinearLayout {
 
     public void setCallBack(CallBack mCallBack) {
         this.mCallBack = mCallBack;
-    }
-
-    public void setAdapter(ChatAdapter mAdapter) {
-        this.mAdapter = mAdapter;
     }
 
     public interface CallBack{

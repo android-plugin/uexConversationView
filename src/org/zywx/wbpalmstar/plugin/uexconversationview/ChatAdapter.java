@@ -20,13 +20,17 @@
 package org.zywx.wbpalmstar.plugin.uexconversationview;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import org.zywx.wbpalmstar.base.BDebug;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.MessageVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.UserVO;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -40,7 +44,7 @@ public class ChatAdapter extends BaseAdapter {
     private UserVO mMyUserVO;
     private ChatItemView.CallBack mCallBack;
     private int mPlayingPosition=-1;
-
+    MediaPlayer mPlayer;
     public ChatAdapter(Context context,List<MessageVO> messageVOs,UserVO otherUserVO,UserVO myUserVO){
         mMessageVOs=messageVOs;
         mContext=context;
@@ -64,8 +68,8 @@ public class ChatAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        MessageVO messageVO=mMessageVOs.get(position);
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        final MessageVO messageVO=mMessageVOs.get(position);
         UserVO userVO;
         ChatItemView chatItemView;
         if (convertView==null||!(convertView instanceof ChatItemView)){
@@ -79,8 +83,24 @@ public class ChatAdapter extends BaseAdapter {
             userVO=mOtherUserVO;
         }
         chatItemView.setCallBack(mCallBack);
-        chatItemView.setAdapter(this);
-        chatItemView.setData(userVO,messageVO,position,mPlayingPosition);
+        chatItemView.setData(userVO,messageVO,position,mPlayingPosition,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mPlayer!=null&&mPlayer.isPlaying()&&mPlayingPosition==position){
+                            mPlayer.stop();
+                            mPlayer.release();
+                            mPlayer=null;
+                            mPlayingPosition=-1;
+                            notifyDataSetChanged();
+                            return;
+                        }
+                        mPlayingPosition=position;
+                        notifyDataSetChanged();
+                        //播放语音
+                        playVoice(mMessageVOs.get(position).getData());
+                    }
+                });
         return chatItemView;
     }
 
@@ -91,5 +111,33 @@ public class ChatAdapter extends BaseAdapter {
 
     public void setPlayingPosition(int mPlayingPosition) {
         this.mPlayingPosition = mPlayingPosition;
+    }
+
+
+    private void playVoice(String filePath){
+        if (filePath==null){
+            BDebug.e("appcan", "file path is null");
+            return;
+        }
+        if (mPlayer!=null){
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer=null;
+        }
+        mPlayer = new MediaPlayer();
+
+        try {
+            mPlayer.setDataSource(filePath);
+            mPlayer.prepare();
+            mPlayer.start();
+            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mPlayingPosition=-1;
+                }
+            });
+        } catch (IOException e) {
+            mPlayingPosition=-1;
+        }
     }
 }
