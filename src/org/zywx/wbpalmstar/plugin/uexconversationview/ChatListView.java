@@ -137,6 +137,10 @@ public class ChatListView extends ListView {
         mChatAdapter.setCallBack(callBack);
     }
 
+    public void stopPlaying() {
+        mChatAdapter.stopPlaying();
+    }
+
 
     public interface OnLoadingListener{
         void onLoading();

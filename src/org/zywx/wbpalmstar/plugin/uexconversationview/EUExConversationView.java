@@ -23,14 +23,15 @@ import org.zywx.wbpalmstar.plugin.uexconversationview.vo.OpenInputVO;
 
 public class EUExConversationView extends EUExBase {
 
+    private static final int MSG_OPEN = 1;
+    private static final int MSG_ADD_MESSAGES = 2;
     private static final int MSG_CLOSE = 3;
     private static final int MSG_CHANGE_STATUS_BY_TIMESTAMP = 4;
     private static final int MSG_DELETE_MESSAGE_BY_TIMESTAMP = 5;
+    private static final int MSG_STOP_PLAYING = 6;
     private String TAG="uexConversationView";
 
     private static final String BUNDLE_DATA = "data";
-    private static final int MSG_OPEN = 1;
-    private static final int MSG_ADD_MESSAGES = 2;
     private Gson mGson;
     private ChatListView mChatListView;
 
@@ -203,6 +204,17 @@ public class EUExConversationView extends EUExBase {
         }
     }
 
+    public void stopPlaying(String[] params) {
+        Message msg = new Message();
+        msg.obj = this;
+        msg.what = MSG_STOP_PLAYING;
+        mHandler.sendMessage(msg);
+    }
+
+    private void stopPlayingMsg(String[] params) {
+        mChatListView.stopPlaying();
+    }
+
     @Override
     public void onHandleMessage(Message message) {
         if(message == null){
@@ -225,6 +237,9 @@ public class EUExConversationView extends EUExBase {
                 break;
             case MSG_DELETE_MESSAGE_BY_TIMESTAMP:
                 deleteMessageByTimestampMsg(bundle.getStringArray(BUNDLE_DATA));
+                break;
+            case MSG_STOP_PLAYING:
+                stopPlayingMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             default:
                 super.onHandleMessage(message);

@@ -140,4 +140,14 @@ public class ChatAdapter extends BaseAdapter {
             mPlayingPosition=-1;
         }
     }
+
+    public void stopPlaying() {
+        if (mPlayer!=null){
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer=null;
+            mPlayingPosition=-1;
+            notifyDataSetChanged();
+        }
+    }
 }
