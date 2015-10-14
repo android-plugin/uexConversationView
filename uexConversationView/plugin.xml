@@ -25,5 +25,6 @@
         <method name="close"/>
         <method name="changeStatusByTimestamp"/>
         <method name="deleteMessageByTimestamp"/>
+        <method name="stopPlaying"/>
     </plugin>
 </uexplugins>
