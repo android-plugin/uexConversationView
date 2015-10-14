@@ -59,6 +59,10 @@ public class ChatItemView extends LinearLayout {
     private TextView mSendFailedRightTv;
 
     private CallBack mCallBack;
+    MediaPlayer mPlayer;
+    AnimationDrawable mAnim;
+
+    private ChatAdapter mAdapter;
 
     public ChatItemView(Context context) {
         super(context);
@@ -80,7 +84,7 @@ public class ChatItemView extends LinearLayout {
         mSendFailedRightTv= (TextView) findViewById(EUExUtil.getResIdID("send_failed_right_tv"));
     }
 
-    public void setData(UserVO userVO, final MessageVO messageVO){
+    public void setData(UserVO userVO, final MessageVO messageVO, final int position, int playingPosition){
         mTimeTV.setText(getTimeString(messageVO.getTimestamp()));
         if (messageVO.getFrom()==1){
             //自己
@@ -108,20 +112,20 @@ public class ChatItemView extends LinearLayout {
         }else{
             //语音
             mMsgContentTV.setText("");
-            final AnimationDrawable anim=new AnimationDrawable();
+            mAnim =new AnimationDrawable();
             if (messageVO.getFrom()==1){
                 //自己
                 mMsgVoiceTimeLeftTV.setVisibility(View.VISIBLE);
-                setVoiceTime(mMsgVoiceTimeLeftTV,messageVO);
+                setVoiceTime(mMsgVoiceTimeLeftTV, messageVO);
                 for (int i = 1; i <=4; i++) {
                     int id=EUExUtil.getResDrawableID("plugin_uex_conversation_right_voice"+i);
                     Drawable frameDrawable=getResources().getDrawable(id);
-                    anim.addFrame(frameDrawable,300);
+                    mAnim.addFrame(frameDrawable,300);
                 }
-                anim.setOneShot(false);
-                anim.setBounds(0, 0, anim.getMinimumWidth(),
-                        anim.getMinimumHeight());
-                mMsgContentTV.setCompoundDrawables(null, null, anim, null);
+                mAnim.setOneShot(false);
+                mAnim.setBounds(0, 0, mAnim.getMinimumWidth(),
+                        mAnim.getMinimumHeight());
+                mMsgContentTV.setCompoundDrawables(null, null, mAnim, null);
             }else{
                 //对方
                 mMsgVoiceTimeRightTV.setVisibility(View.VISIBLE);
@@ -129,24 +133,42 @@ public class ChatItemView extends LinearLayout {
                 for (int i = 1; i <=4; i++) {
                     int id=EUExUtil.getResDrawableID("plugin_uex_conversation_left_voice"+i);
                     Drawable frameDrawable=getResources().getDrawable(id);
-                    anim.addFrame(frameDrawable,300);
+                    mAnim.addFrame(frameDrawable,300);
                 }
-                anim.setOneShot(false);
-                anim.setBounds(0, 0, anim.getMinimumWidth(),
-                        anim.getMinimumHeight());
-                mMsgContentTV.setCompoundDrawables(anim, null, null, null);
+                mAnim.setOneShot(false);
+                mAnim.setBounds(0, 0, mAnim.getMinimumWidth(),
+                        mAnim.getMinimumHeight());
+                mMsgContentTV.setCompoundDrawables(mAnim, null, null, null);
             }
 
             mMsgContentTV.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mAdapter.setPlayingPosition(position);
+                    mAdapter.notifyDataSetChanged();
                     //播放语音
-                    anim.start();
-                    playVoice(messageVO.getData(),anim);
                 }
             });
         }
+        if (position!=playingPosition){
+            resetPlayer();
+        }else{
+            mAnim.start();
+            playVoice(messageVO.getData(), mAnim);
+
+        }
         setSendFailTv(userVO,messageVO);
+     }
+
+    private void resetPlayer(){
+        if (mPlayer!=null){
+            mPlayer.stop();
+            mPlayer.reset();
+            mPlayer=null;
+        }
+        if (mAnim!=null&&mAnim.isRunning()) {
+            stopAnim(mAnim);
+        }
     }
 
     private void setSendFailTv(UserVO userVO, final MessageVO messageVO){
@@ -189,12 +211,22 @@ public class ChatItemView extends LinearLayout {
     }
 
     private void playVoice(String filePath, final AnimationDrawable anim){
-        MediaPlayer player=new MediaPlayer();
+        if (filePath==null){
+            BDebug.e("appcan","file path is null");
+            return;
+        }
+        if (mPlayer!=null){
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer=null;
+        }
+        mPlayer = new MediaPlayer();
+
         try {
-            player.setDataSource(filePath);
-            player.prepare();
-            player.start();
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            mPlayer.setDataSource(filePath);
+            mPlayer.prepare();
+            mPlayer.start();
+            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     stopAnim(anim);
@@ -262,6 +294,10 @@ public class ChatItemView extends LinearLayout {
 
     public void setCallBack(CallBack mCallBack) {
         this.mCallBack = mCallBack;
+    }
+
+    public void setAdapter(ChatAdapter mAdapter) {
+        this.mAdapter = mAdapter;
     }
 
     public interface CallBack{

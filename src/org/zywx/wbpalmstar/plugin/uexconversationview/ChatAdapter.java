@@ -39,6 +39,7 @@ public class ChatAdapter extends BaseAdapter {
     private UserVO mOtherUserVO;
     private UserVO mMyUserVO;
     private ChatItemView.CallBack mCallBack;
+    private int mPlayingPosition=-1;
 
     public ChatAdapter(Context context,List<MessageVO> messageVOs,UserVO otherUserVO,UserVO myUserVO){
         mMessageVOs=messageVOs;
@@ -78,12 +79,17 @@ public class ChatAdapter extends BaseAdapter {
             userVO=mOtherUserVO;
         }
         chatItemView.setCallBack(mCallBack);
-        chatItemView.setData(userVO,messageVO);
+        chatItemView.setAdapter(this);
+        chatItemView.setData(userVO,messageVO,position,mPlayingPosition);
         return chatItemView;
     }
 
 
     public void setCallBack(ChatItemView.CallBack callBack) {
         this.mCallBack=callBack;
+    }
+
+    public void setPlayingPosition(int mPlayingPosition) {
+        this.mPlayingPosition = mPlayingPosition;
     }
 }
