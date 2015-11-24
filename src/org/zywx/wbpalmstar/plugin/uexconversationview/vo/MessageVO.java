@@ -19,8 +19,6 @@
 
 package org.zywx.wbpalmstar.plugin.uexconversationview.vo;
 
-import android.media.Image;
-
 import java.io.Serializable;
 
 /**
@@ -30,7 +28,7 @@ public class MessageVO implements Serializable {
 
     private int type;// 1-文本 2-录音
     private int from;// 1-me  2-you
-    private long timestamp;//时间戳
+    private Long timestamp;//时间戳
     private String data;// type == 1时  文本内容  type == 2 时 录音文件路径
     private long duration=-1l;//语音长度
 
@@ -52,7 +50,7 @@ public class MessageVO implements Serializable {
         this.from = from;
     }
 
-    public long getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 

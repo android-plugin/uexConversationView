@@ -1,13 +1,9 @@
 package org.zywx.wbpalmstar.plugin.uexconversationview;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
-import android.text.TextUtils;
 import android.widget.AbsoluteLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 
@@ -19,7 +15,10 @@ import org.zywx.wbpalmstar.engine.EBrowserView;
 import org.zywx.wbpalmstar.engine.universalex.EUExBase;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.AddMessagesInputVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.MessageVO;
+import org.zywx.wbpalmstar.plugin.uexconversationview.vo.OnRefreshStatusVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.OpenInputVO;
+
+import zrc.widget.ZrcListView;
 
 public class EUExConversationView extends EUExBase {
 
@@ -29,6 +28,7 @@ public class EUExConversationView extends EUExBase {
     private static final int MSG_CHANGE_STATUS_BY_TIMESTAMP = 4;
     private static final int MSG_DELETE_MESSAGE_BY_TIMESTAMP = 5;
     private static final int MSG_STOP_PLAYING = 6;
+    private static final int MSG_END_REFRESHING = 7;
     private String TAG="uexConversationView";
 
     private static final String BUNDLE_DATA = "data";
@@ -68,7 +68,15 @@ public class EUExConversationView extends EUExBase {
             return;
         }
         mChatListView=new ChatListView(mContext);
-        mChatListView.init(inputVO.getYou(), inputVO.getMe());
+        mChatListView.init(inputVO.getYou(), inputVO.getMe(), new ZrcListView.OnStartListener() {
+            @Override
+            public void onStart() {
+                OnRefreshStatusVO statusVO=new OnRefreshStatusVO();
+                statusVO.status=2;
+                statusVO.type=1;
+                callBackPluginJs(JsConst.ON_REFRESH_STATUS_CHANGE,mGson.toJson(statusVO));
+            }
+        });
         AbsoluteLayout.LayoutParams layoutParams=new AbsoluteLayout.LayoutParams
                 (inputVO.getW(),inputVO.getH(),inputVO.getX(),inputVO.getY());
 //        layoutParams.setMargins(inputVO.getX(),inputVO.getY(),0,0);
@@ -215,6 +223,24 @@ public class EUExConversationView extends EUExBase {
         mChatListView.stopPlaying();
     }
 
+    public void endRefreshing(String[] params) {
+        if (params == null || params.length < 1) {
+            errorCallback(0, 0, "error params!");
+            return;
+        }
+        Message msg = new Message();
+        msg.obj = this;
+        msg.what = MSG_END_REFRESHING;
+        Bundle bd = new Bundle();
+        bd.putStringArray(BUNDLE_DATA, params);
+        msg.setData(bd);
+        mHandler.sendMessage(msg);
+    }
+
+    private void endRefreshingMsg(String[] params) {
+        mChatListView.setRefreshSuccess();
+    }
+
     @Override
     public void onHandleMessage(Message message) {
         if(message == null){
@@ -240,6 +266,9 @@ public class EUExConversationView extends EUExBase {
                 break;
             case MSG_STOP_PLAYING:
                 stopPlayingMsg(bundle.getStringArray(BUNDLE_DATA));
+                break;
+            case MSG_END_REFRESHING:
+                endRefreshingMsg(bundle.getStringArray(BUNDLE_DATA));
                 break;
             default:
                 super.onHandleMessage(message);

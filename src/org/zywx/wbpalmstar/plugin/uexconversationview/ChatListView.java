@@ -22,19 +22,24 @@ package org.zywx.wbpalmstar.plugin.uexconversationview;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.widget.ListView;
 
+import org.zywx.wbpalmstar.base.BDebug;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.AddMessagesInputVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.MessageVO;
 import org.zywx.wbpalmstar.plugin.uexconversationview.vo.UserVO;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+import zrc.widget.SimpleHeader;
+import zrc.widget.ZrcListView;
 
 /**
  * Created by ylt on 15/9/14.
  */
-public class ChatListView extends ListView {
+public class ChatListView extends ZrcListView {
 
     private List<MessageVO> mMessageVOs;
 
@@ -47,24 +52,29 @@ public class ChatListView extends ListView {
         super(context);
     }
 
-    public void init(UserVO otherUserVO,UserVO myUserVO){
+    public void init(UserVO otherUserVO,UserVO myUserVO, final OnStartListener onStartListener){
         mMessageVOs=new ArrayList<MessageVO>();
         if (mChatAdapter==null) {
             mChatAdapter = new ChatAdapter(this.getContext(), mMessageVOs, otherUserVO, myUserVO);
         }
-//        SimpleHeader header=new SimpleHeader(getContext());
-//        header.setTextColor(0xff0066aa);
-//        header.setCircleColor(0xff33bbee);
-//        setHeadable(header);
+        SimpleHeader header=new SimpleHeader(getContext());
+        header.setTextColor(0xff0066aa);
+        header.setCircleColor(0xff33bbee);
+        setHeadable(header);
         setAdapter(mChatAdapter);
-//        setOnRefreshStartListener(new OnStartListener() {
-//            @Override
-//            public void onStart() {
-//                if (mLoadingListener != null) {
-//                    mLoadingListener.onLoading();
-//                }
-//            }
-//        });
+        setOnRefreshStartListener(new OnStartListener() {
+            @Override
+            public void onStart() {
+                postDelayed(mRefreshDelayRunnable,3000);
+                onStartListener.onStart();
+            }
+        });
+        setOnScrollStateListener(new OnScrollStateListener() {
+            @Override
+            public void onChange(int state) {
+                BDebug.e("appcan","state  "+state);
+            }
+        });
         setBackgroundColor(Color.parseColor("#e7eff0"));
         setFadingEdgeLength(0);
         setOverScrollMode(OVER_SCROLL_NEVER);
@@ -74,6 +84,13 @@ public class ChatListView extends ListView {
         setCacheColorHint(Color.TRANSPARENT);
 //        setTranscriptMode(TRANSCRIPT_MODE_ALWAYS_SCROLL);
     }
+
+    Runnable mRefreshDelayRunnable=new Runnable() {
+        @Override
+        public void run() {
+            setRefreshSuccess("");
+        }
+    };
 
     public void addMessages(AddMessagesInputVO inputVO){
         int lastVisiblePosition=getLastVisiblePosition();
@@ -98,11 +115,22 @@ public class ChatListView extends ListView {
                 }
             }
         }
+        sortMessages();
         mChatAdapter.notifyDataSetChanged();
         if (needScrollToEnd&&getAdapter().getCount()>0){
             setSelection(getAdapter().getCount() - 1);
         }
     }
+
+    private void sortMessages(){
+        Collections.sort(mMessageVOs, new Comparator<MessageVO>() {
+            @Override
+            public int compare(MessageVO lhs, MessageVO rhs) {
+                return lhs.getTimestamp().compareTo(rhs.getTimestamp());
+            }
+        });
+    }
+
 
     public void changeStatusByTimestamp(long time,int status){
         for (MessageVO messageVO:mMessageVOs){
@@ -112,6 +140,12 @@ public class ChatListView extends ListView {
             }
         }
         mChatAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void setRefreshSuccess() {
+        super.setRefreshSuccess(" ");
+        removeCallbacks(mRefreshDelayRunnable);
     }
 
     public void deleteMessageByTimestamp(long time){

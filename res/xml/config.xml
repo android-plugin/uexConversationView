@@ -28,5 +28,7 @@
         <method name="changeStatusByTimestamp" />
         <method name="deleteMessageByTimestamp" />
         <method name="stopPlaying"/>
+        <method name="onRefreshStatusChange" type="2"/>
+        <method name="endRefreshing"/>
     </plugin>
 </uexplugins>
