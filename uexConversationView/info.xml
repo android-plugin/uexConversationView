@@ -20,7 +20,8 @@
 
 <uexplugins>
     <plugin
-        uexName="uexConversationView" version="3.0.1" build="1">
-        <info>1:聊天界面插件</info>
+        uexName="uexConversationView" version="3.0.2" build="2">
+        <info>2:修复可能出现崩溃的问题</info>
+        <build>1:聊天界面插件</build>
     </plugin>
 </uexplugins>

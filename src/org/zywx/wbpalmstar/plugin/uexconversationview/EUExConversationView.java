@@ -41,7 +41,6 @@ public class EUExConversationView extends EUExBase {
 
     @Override
     protected boolean clean() {
-        mGson=null;
         return false;
     }
 
