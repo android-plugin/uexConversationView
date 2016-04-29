@@ -2156,7 +2156,9 @@ public abstract class ZrcAbsListView extends ZrcAdapterView<ListAdapter>
 				}
 			}
 			if (isRefreshing || isLoadingMore) {
-				lastBottom += mZrcFooter.getHeight();
+				if (mZrcFooter!=null) {
+					lastBottom += mZrcFooter.getHeight();
+				}
 			}
 			final Rect listPadding = mListPadding;
 			final Headable zrcHeader = mZrcHeader;
